@@ -1,0 +1,11 @@
+clear all;
+close all;
+clc;
+
+%%Channel Matrix Fromulation%%
+
+%iid Rayleigh channel by complex gaussian
+%gaussian
+h_w=
+
+%spat
