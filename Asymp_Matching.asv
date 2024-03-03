@@ -57,12 +57,12 @@ A
 
 %kappa-mu parameter
 % 필요없나?
-%gamma(-1)*(1+kap)*mu==exp(-1*kap*mu)*int(fun,t,0,1),
+%omeg==(gamma(mu+1)*omeg*exp(-1*kap*mu)*kummerU(mu+1,mu,kap*mu))/(gamma(mu)*mu*(1+kap))
 syms kap mu omeg t
-fun=exp(kap*mu*t)*(t^mu)*(1-t)^(-2);
-fun_int=int(fun,t,0,1);
+fun=@(t)
 K=vpasolve([mu==(b+1)/2,
-    a==(2*exp(-1*kap*mu)*((1+kap)*mu/omeg)^mu)/gamma(mu)] ...
+    omeg==(gamma(mu+1)*omeg*exp(-1*kap*mu)*((gamma(mu)*integral((@(t)exp(kap*mu*t)*(t^mu)*(1-t)^(-2)),0,1))/(gamma(mu+1)*gamma(-1))))/(gamma(mu)*mu*(1+kap))
+    ,a==(2*exp(-1*kap*mu)*((1+kap)*mu/omeg)^mu)/gamma(mu)] ...
     ,[kap,mu,omeg]);
 K
 
