@@ -1,28 +1,24 @@
 %원 논문 Fig1.(a) 그려보기
-
 clear all, close all
+clc;
 
 %%파라미터 설정
 T_SNR_dB=[-15:1:20]; %SNR 범위 설정
-T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정Line 6 T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
+T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
 N_iter=1000; %반복 횟수 (Ergodic capacity 구하기 위해서) 
 sq2 = sqrt(0.5); %상수 지정
 nT=32; nR=8; %MIMO Scale 지정
-H = sq2*(randn(nR,nT)+j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
 q_gain=0;
 
 %%Quantization bit 지정, b에 따른 상수 지정, b infty인 경우 근사식 이용
 
 for Icase=1:5
-    if Icase==1, q_gain=0.6364; 
-    elseif Icase==2, q_gain=0.8825; 
-    elseif Icase==3, q_gain=0.96546; 
-    elseif Icase==4, q_gain=0.990503; 
-    else q_gain=1; 
+    if Icase==1, q_gain=0.6364; beta=0.3636; 
+    elseif Icase==2, q_gain=0.8825; beta=0.1175; 
+    elseif Icase==3, q_gain=0.96546; beta=0.03454;
+    elseif Icase==4, q_gain=0.990503; beta=0.009497;
+    else q_gain=1; beta=0; 
     end
-
-n=min(nT,nR); %channel mtx 짧은 부분 크기
-I = eye(n); %해당 스케일의 단위행렬 지정
 
 R(Icase,:) = zeros(1,length(T_SNR_dB));%Capacity 정보 담을 행렬 지정 (안테나 경우*SNR 범위)
 R_candi=linspace(0,0,nT); %Maximum 선택 위한 후보값 담을 행렬(벡터) 지정
@@ -30,14 +26,14 @@ R_candi=linspace(0,0,nT); %Maximum 선택 위한 후보값 담을 행렬(벡터)
 %% Ergodic Capacity 계산
 for i=1:length(T_SNR_dB)
     for iter=1:N_iter %반복
-        if nR>=nT, HH = H'*H; else HH = H*H'; end
-        for j=1:nT
+        H = sq2*(randn(nR,nT)+j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
+        for j=1:nT %Transmit Antenna Selection
             sum_four_sqr=0; norm_sqr=0;
             norm_sqr=(H(:,j))'*H(:,j);
             for k=1:nR
                 sum_four_sqr=sum_four_sqr+abs(H(k,j))^4;
             end
-            R_candi(j)=log2(1+(T_SNR_linear(i).*q_gain.*(norm_sqr).^2)/(norm_sqr+T_SNR_linear(i).*(1-q_gain).*sum_four_sqr));
+            R_candi(j)=log2(1+(T_SNR_linear(i)*q_gain*(norm_sqr)^2)/(norm_sqr+T_SNR_linear(i)*(beta)*sum_four_sqr));
         end
         R(Icase,i)=R(Icase,i)+max(R_candi);
     end
