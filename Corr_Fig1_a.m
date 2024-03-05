@@ -1,9 +1,13 @@
 clear all, close all
 clc;
 
-%%파라미터 설정
+%{
+Correlation Matrix는 Uniform Correlation Model
+%}
+
+%% 파라미터 설정
 T_SNR_dB=[-15:1:20]; %SNR 범위 설정
-T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정Line 6 T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
+T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
 N_iter=1000; %반복 횟수 (Ergodic capacity 구하기 위해서) 
 sq2 = sqrt(0.5); %상수 지정
 nT=32; nR=8; %MIMO Scale 지정
@@ -13,16 +17,14 @@ phi_T=zeros(nT);
 for k=1:nT
     phi_T(k,k)=1;
     for j=k+1:nT
-        x=-1+2*rand;
-        phi_T(k,j)=x+1j*sqrt(1-x^2);
-        phi_T(j,k)=conj(phi_T(k,j));
+        phi_T(k,j)=-1/(nT-1);
+        phi_T(j,k)=-1/(nT-1); %correlation coefficient=1/2
     end
 end
 t_corr=sqrtm(phi_T); %Kronecker model correlation mtx.
 
 
-%%Quantization bit 지정, b에 따른 상수 지정, b infty인 경우 근사식 이용
-
+%% Quantization bit 지정, b에 따른 상수 지정, b infty인 경우 근사식 이용
 for Icase=1:5 %quantization bit에 따른 그래프
     if Icase==1, q_gain=0.6364; 
     elseif Icase==2, q_gain=0.8825; 

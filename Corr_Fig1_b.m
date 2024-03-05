@@ -1,17 +1,32 @@
 clear all, close all
 clc;
 
-%%파라미터 설정
+%% Receive Antenna - Ergodic Rate 그래프 -> Quantization bit별 커브
+
+%% 파라미터 설정
 T_SNR_dB=10; %SNR 범위 설정
-T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정Line 6 T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
+T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
 N_iter=1000; %반복 횟수 (Ergodic capacity 구하기 위해서) 
 sq2 = sqrt(0.5); %상수 지정
 nT=32; 
 nR=[4:1:32]; %MIMO Scale 지정
 q_gain=0;
 
+%% 고정된 Transmit Antenna 개수에 따른 Transmit Antenna Correlation
+phi_T=zeros(nT);
+for k=1:nT
+    phi_T(k,k)=1;
+    for j=k+1:nT
+        phi_T(k,j)=-1/(nT-1);
+        phi_T(j,k)=-1/(nT-1);
+    end
+end
+t_corr=sqrtm(phi_T); %Kronecker model correlation mtx.
+
+%% 
 R_candi=linspace(0,0,nT); %Maximum 선택 위한 후보값 담을 행렬(벡터) 지정
 R(:,:) = zeros(3,length(nR));%Capacity 정보 담을 행렬 지정 (안테나 경우*SNR 범위)
+
 %% Ergodic Capacity 계산
 for i=1:length(nR)
     for Icase=1:3 %Quantization bit 지정, b에 따른 상수 지정, b infty인 경우 근사식 이용
@@ -20,7 +35,8 @@ for i=1:length(nR)
         else q_gain=0.990503; 
         end
         for iter=1:N_iter %반복
-            H = sq2*(randn(nR(i),nT)+1j*randn(nR(i),nT)); %Complex Circular Gaussian channel (Rayleigh)
+            H_w= sq2*(randn(nR(i),nT)+1j*randn(nR(i),nT)); %Complex Circular Gaussian channel (Rayleigh)
+            H=H_w*t_corr; %channel matrix
             if nR(i)>=nT, HH = H'*H; else HH = H*H'; end
             for j=1:nT %Transmit Antenna Selection
             sum_four_sqr=0; norm_sqr=0;
@@ -39,4 +55,4 @@ R = R/N_iter; %Expectation 계산
 plot(nR,R(1,:),'b-', nR,R(2,:),'b-', nR,R(3,:),'b-');
 hold on, grid on,
 xlabel('Number of Receive Antennas Nr'); ylabel('Ergodic Rate [bps/Hz]');
-xlim([4,32]); ylim([3.5,8.5])
+xlim([4,32]); ylim([4,10])

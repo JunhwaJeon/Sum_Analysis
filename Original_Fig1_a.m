@@ -1,6 +1,7 @@
 %원 논문 Fig1.(a) 그려보기
 clear all, close all
 clc;
+%% Transmit SNR - Ergodic Rate 그래프 -> Quantization bit별 커브 그리기
 
 %%파라미터 설정
 T_SNR_dB=[-15:1:20]; %SNR 범위 설정
