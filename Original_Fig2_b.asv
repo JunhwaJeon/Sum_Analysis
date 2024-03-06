@@ -1,7 +1,7 @@
 clear all, close all;
 clc;
 %% 원 논문 Fig2_b
-%% Transmit Antenna Selection Gain 영향 분석
+%% T
 %% Transmit SNR=5dB, Quantization bit=2,3,4 에서의 Tx-Ergodic Rate 그래프
 %% 파라미터 설정
 T_SNR_dB=5; %Transmit SNR
@@ -18,20 +18,21 @@ for Icase=1:3 %quantization bit에 따른 그래프
     else q_gain=0.990503; 
     end
 
-    R(Icase,:) = zeros(1,length(nT));%Capacity 정보 담을 행렬 지정 (Qbit 수*nT범위)
+    R(Icase,:) = zeros(1,length(T_SNR_dB));%Capacity 정보 담을 행렬 지정 (안테나 경우*SNR 범위)
+    R_candi=linspace(0,0,nT); %Maximum 선택 위한 후보값 담을 행렬(벡터) 지정
 
     %% Ergodic Capacity 계산
-    for i=1:length(nT)
-        R_candi=linspace(0,0,nT(i)); %Maximum 선택 위한 후보값 담을 행렬(벡터) 지정
+    for i=1:length(T_SNR_dB)
         for iter=1:N_iter %반복
-            H= sq2*(randn(nR,nT(i))+1j*randn(nR,nT(i))); %Complex Circular Gaussian channel (Rayleigh)
-            for j=1:nT(i)
-                sum_four_sqr=0;
-                norm_sqr=norm(H(:,j))^2;
+            H_w= sq2*(randn(nR,nT)+1j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
+            H=H_w*t_corr; %channel matrix
+            for j=1:nT
+                sum_four_sqr=0; norm_sqr=0;
+                norm_sqr=(H(:,j))'*H(:,j);
                 for k=1:nR
                     sum_four_sqr=sum_four_sqr+abs(H(k,j))^4;
                 end
-                R_candi(j)=log2(1+(T_SNR_linear*q_gain*(norm_sqr)^2)/(norm_sqr+T_SNR_linear*(1-q_gain)*sum_four_sqr));
+                R_candi(j)=log2(1+(T_SNR_linear(i).*q_gain.*(norm_sqr).^2)/(norm_sqr+T_SNR_linear(i).*(1-q_gain).*sum_four_sqr));
             end
             R(Icase,i)=R(Icase,i)+max(R_candi);
         end
@@ -40,7 +41,7 @@ end
 
 R = R/N_iter; %Expectation 계산
 
-plot(nT,R(1,:),'b-', nT,R(2,:),'b-', nT,R(3,:),'b-');
+plot(T_SNR_dB,R(1,:),'b-', T_SNR_dB,R(2,:),'b-', T_SNR_dB,R(3,:),'b-');
 hold on, grid on,
-xlim([1,64]);
-xlabel('Number of Transmit Antennas Nt'); ylabel('Ergodic Rate [bps/Hz]');
+plot(T_SNR_dB,R(4,:),'b-', T_SNR_dB, R(5,:),'b-');
+xlabel('Transmit SNR[dB]'); ylabel('Ergodic Rate [bps/Hz]');

@@ -6,18 +6,21 @@ clc;
 sq2 = sqrt(0.5); %상수 지정
 
 %iid Rayleigh channel matrix
-nR=8; nT=8; %Antenna 개수 지정
+nR=4; nT=4; %Antenna 개수 지정
 H_w=sq2*(randn(nR,nT)+1j*randn(nR,nT));
 
 %spatial correlation matrix
-%random correlation coefficient 주어서 어떤 distribution이 matching이 잘 되는지 확인
+%Uniform correlation 주어서 어떤 distribution이 matching이 잘 되는지 확인
 phi_T=zeros(nT);
-for i=1:nT
-    phi_T(i,i)=1;
-    for j=i+1:nT
-        x=-1+2*rand;
-        phi_T(i,j)=x+(2*randi(2)-3)*1j*sqrt(1-x^2);
-        phi_T(j,i)=conj(phi_T(i,j));
+p=0;
+while p==0
+    p=-1*randi(nT+1)+2;
+end
+for k=1:nT
+    phi_T(k,k)=1;
+    for j=k+1:nT
+        phi_T(k,j)=1/p;
+        phi_T(j,k)=1/p;
     end
 end
 t_corr=sqrtm(phi_T); %transmit correlation mtx
@@ -59,9 +62,8 @@ A
 % 필요없나?
 %gamma(-1)*(1+kap)*mu==exp(-1*kap*mu)*int(fun,t,0,1),
 syms kap mu omeg t
-fun=exp(kap*mu*t)*(t^mu)*(1-t)^(-2);
-fun_int=int(fun,t,0,1);
-K=vpasolve([mu==(b+1)/2,
+K=vpasolve([mu==(b+1)/2, ...
+    exp(kap*mu)*gamma(-1)*(1+kap)*mu==int(exp(kap*mu*t)*(t^mu)*(1-t)^(-2),t,0,1), ...
     a==(2*exp(-1*kap*mu)*((1+kap)*mu/omeg)^mu)/gamma(mu)] ...
     ,[kap,mu,omeg]);
 K

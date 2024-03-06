@@ -18,10 +18,11 @@ for k=1:nT
     phi_T(k,k)=1;
     for j=k+1:nT
         phi_T(k,j)=3/4;%-1/(nT-1);
-        phi_T(j,k)=3/4;%-1/(nT-1); %correlation coefficient constraint 범위 내 설정
+        phi_T(j,k)3/4;%-1/(nT-1); %correlation coefficient constraint 범위 내 설정
     end
 end
 t_corr=sqrtm(phi_T); %Kronecker model correlation mtx.
+
 
 %% Quantization bit 지정, b에 따른 상수 지정, b infty인 경우 근사식 이용
 for Icase=1:5 %quantization bit에 따른 그래프
