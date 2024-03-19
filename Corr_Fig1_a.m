@@ -41,7 +41,7 @@ for Icase=1:5 %quantization bit에 따른 그래프
             H_w= sq2*(randn(nR,nT)+1j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
             H=H_w*t_corr; %channel matrix
             for j=1:nT
-                sum_four_sqr=0; norm_sqr=0;
+                sum_four_sqr=0;
                 norm_sqr=(H(:,j))'*H(:,j);
                 for k=1:nR
                     sum_four_sqr=sum_four_sqr+abs(H(k,j))^4;

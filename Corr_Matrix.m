@@ -3,7 +3,6 @@
 
 nT=[4 8 16]; nR=8; %MIMO Scale 지정
 sq2 = sqrt(0.5); %상수 지정
-A(:)=linspace(0,0,length(nT));
 
 for scale=1:length(nT)
     phi_T=zeros(nT(scale));

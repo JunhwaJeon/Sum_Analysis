@@ -27,9 +27,9 @@ R_candi=linspace(0,0,nT); %Maximum 선택 위한 후보값 담을 행렬(벡터)
 %% Ergodic Capacity 계산
 for i=1:length(T_SNR_dB)
     for iter=1:N_iter %반복
-        H = sq2*(randn(nR,nT)+j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
+        H = sq2*(randn(nR,nT)+1j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
         for j=1:nT %Transmit Antenna Selection
-            sum_four_sqr=0; norm_sqr=0;
+            sum_four_sqr=0;
             norm_sqr=(H(:,j))'*H(:,j);
             for k=1:nR
                 sum_four_sqr=sum_four_sqr+abs(H(k,j))^4;
