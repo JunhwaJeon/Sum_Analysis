@@ -1,0 +1,43 @@
+clear all; close; clc;
+
+al=1/2; om=64;
+fir_moment=SumMoment_4(al, om, 1);
+sec_moment=SumMoment_4(al, om, 2);
+four_moment=SumMoment_4(al, om, 4);
+z1=log((fir_moment)^2/(sec_moment));
+z2=log((sec_moment)^2/(four_moment));
+
+% 이변수 함수 정의
+fun1=@(x) equa(x(1),x(2),z1);
+fun2=@(x) equa(x(1),x(2)/2,z2);
+
+% 최적화 실행
+options = optimoptions('fsolve');
+% 초기 추정값 설정
+x0 = [0, 1];
+[x, fval] = fsolve([fun1,fun2],x0,options);
+
+% 결과 출력
+disp('Optimal point:');
+disp(x);
+disp('Function value at optimal point:');
+disp(fval);
+
+function F=equa(m,k,z1,z2)
+F1=g(m,k)-log(z1);
+F2=g(m,k/2)-log(z2)
+end
+
+function result = h(x)
+    result = gammaln(x);
+    result = double(result);
+end
+
+function result = g(m, k)
+    h1 = h(m + 1/k);
+    h2 = h(m);
+    h3 = h(m + 2/k);
+    
+    result = h1 - h2 - h3;
+    result = double(result);
+end

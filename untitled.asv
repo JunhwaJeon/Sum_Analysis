@@ -1,0 +1,10 @@
+close all; clear; clc;
+
+m=0:0.1:20;
+k=logspace(-5)
+
+[M,K]=meshgrid(m,k);
+
+Z=2*gammaln(M+1./K)-gammaln(M)-gammaln(M+2./K);
+
+mesh(M,1./K,Z)

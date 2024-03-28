@@ -51,13 +51,17 @@ b=(nR/2)-1;
 
 %numerical searching of <alpha-mu> parameter
 syms alp mu omeg
-A=vpasolve([a==(alp*mu^mu)/(gamma(mu)*omeg^mu), ...
-    b==-1+alp*mu],[alp,mu,omeg]);
+assume(alp,'real') 
+assume(mu,'real') 
+assume(omeg,'real')
+A=vpasolve([a==((b+1)^mu)/(gamma(mu)*omeg^mu), ...
+    SumMoment_4(1/2, scl_para,1)==(gamma(1/alp+mu)*(mu/omeg)^(-1/alp))/gamma(mu), ...
+    SumMoment_4(1/2, scl_para,2)==(gamma(2/alp+mu)*(mu/omeg)^(-2/alp))/gamma(mu)],[alp,mu,omeg]);
 %% Numerical searching of alpha, kappa, eta, mu parameter
 
 A
 
-B=Weibull_MoM_4(1/2, scl_para)
+%B=Weibull_MoM_4(1/2, scl_para)
 %{
 %kappa-mu parameter
 % 필요없나?
