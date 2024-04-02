@@ -32,7 +32,7 @@ disp('Function value at optimal point:');
 disp(fval);
 
 function F=equa(m,k,z1,z2)
-F=(g(m,k)-log(z1))^2+(g(m,k/2)-log(z2))^2;
+F=(g(m,k)-z1)^2+(g(m,k/2)-z2)^2;
 end
 
 function result = g(m, k)

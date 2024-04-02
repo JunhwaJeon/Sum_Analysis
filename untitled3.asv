@@ -1,3 +1,4 @@
+cvx_clear
 clear all; close all; clc;
 
 al=1/2; om=64;
@@ -6,15 +7,19 @@ sec_moment=SumMoment_4(al, om, 2);
 four_moment=SumMoment_4(al, om, 4);
 z1=log((fir_moment)^2/(sec_moment));
 z2=log((sec_moment)^2/(four_moment));
+
+
 syms m k
 objective=(g(m,k)-z1)^2+(g(m,k/2)-z2)^2;
 
 cvx_begin
     variables m k
-    minimize(objec
+    minimize(@(m,k) (m + 1/k-1/2)*log(m + 1/k)+1/(12*(m + 1/k))-1/(360*(m + 1/k)^3)+1/(1260*x^5)-1/(1680*x^7)- ...
+        (x-1/2)*log(x)+1/(12*x)-1/(360*x^3)+1/(1260*x^5)-1/(1680*x^7)- ...
+        (x-1/2)*log(x)+1/(12*x)-1/(360*x^3)+1/(1260*x^5)-1/(1680*x^7))
     subject to
-        m>0;
-        k>0;
+        m > 0;
+        k > 0;
 cvx_end
 
 disp(['최적해: x = ', num2str(m), ', y = ', num2str(k)]);

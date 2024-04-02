@@ -1,16 +1,27 @@
-% 파라미터 설정
-lambda = 64;
-k = 1/2;
+clear all; close all; clc;
 
-% 범위 설정
-x = 0:0.1:200;
+al=1/2; om=64;
+fir_moment=SumMoment_4(al, om, 1);
+sec_moment=SumMoment_4(al, om, 2);
+four_moment=SumMoment_4(al, om, 4);
+z1=log((fir_moment)^2/(sec_moment));
+z2=log((sec_moment)^2/(four_moment));
 
-% Weibull 분포의 확률 밀도 함수(PDF) 계산
-pdf = (k/lambda) * (x/lambda).^(k-1) .* exp(-(x/lambda).^k);
+x=optimvar('x',2,'LowerBound',[0,0.1^10]);
+eq1=2*gammaln(x(1) + 1/x(2))-gammaln(x(1) + 2/x(2))-gammaln(x(1))-z1==0;
+eq2=2*gammaln(x(1) + 2/x(2))-gammaln(x(1) + 4/x(2))-gammaln(x(1))-z2==0;
 
-% 그래프 그리기
-plot(x, pdf, 'LineWidth', 2);
-title('Weibull Distribution (scale=64, shape=1/2)');
-xlabel('x');
-ylabel('PDF');
-grid on;
+prob=eqnproblem;
+prob.Equations.eq1=eq1;
+prob.Equations.eq2=eq2;
+
+x0.x=[0,1];
+[sol,fval,exitflag]=solve(prob,x0);
+
+function result = g(m, k)
+    h1 = 2*gammaln(m + 1/k);
+    h2 = gammaln(m);
+    h3 = gammaln(m + 2/k);
+    
+    result = h1 - h2 - h3;
+end
