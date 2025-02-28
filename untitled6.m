@@ -4,16 +4,16 @@ clear all; close all; clc;
 lambda = 64;
 k = 1/2;
 num_variables = 4; % 합할 확률 변수의 개수
-alpha=0.0013; mu=4000;
+alpha=0.001; mu=8124;
 expec=SumMoment_4(lambda,k,1);
 om=log(mu)+alpha*gammaln(mu)+alpha*log(expec)-alpha*gammaln(mu+1/alpha);
 om=exp(om);
 
 % 범위 설정
-x = 0:0.1:1000;
+x = 0:0.01:8;
 
 % 각 확률 변수의 PDF 계산
-pdf_each = (k/lambda) * (x/lambda).^(k-1) .* exp(-(x/lambda).^k);
+pdf_each = (k/lambda) * (x).^(k-1) .* exp(-(x).^k);
 
 % 확률 변수들의 합의 PDF 계산
 pdf_sum = conv(pdf_each, pdf_each);
@@ -24,8 +24,9 @@ end
 log_pdf_approximate=log(alpha)+mu*log(mu)+(alpha*mu-1)*log(x)-(mu/om)*x.^alpha-mu*log(om)-gammaln(mu);
 pdf_approximate=exp(log_pdf_approximate);
 % 그래프 그리기
-plot(x,pdf_approximate, 'r-');hold on; grid on;
-plot(x,pdf_sum(30000:40000),'b-');
+%plot(x,pdf_approximate, 'r-');hold on; grid on;
+plot(x,pdf_sum(1600:2400),'b-');
+%plot(x,pdf_each,'g-')
 title('PDF of Sum of 4 Weibull Distributed Variables');
 xlabel('x');
 ylabel('PDF');

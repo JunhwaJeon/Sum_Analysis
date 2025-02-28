@@ -39,4 +39,6 @@ R = R/N_iter; %Expectation 계산
 plot(nR,R(1,:),'b-', nR,R(2,:),'b-', nR,R(3,:),'b-');
 hold on, grid on,
 xlabel('Number of Receive Antennas Nr'); ylabel('Ergodic Rate [bps/Hz]');
+legend('Simulation rate in Eq.(6)')
 xlim([4,32]); ylim([3.5,8.5])
+

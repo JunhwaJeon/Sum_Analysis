@@ -43,4 +43,5 @@ R = R/N_iter; %Expectation 계산
 plot(T_SNR_dB,R(1,:),'k--', T_SNR_dB,R(2,:),'b-', T_SNR_dB,R(3,:),'b-');
 hold on, grid on,
 plot(T_SNR_dB,R(4,:),'b-');
+legend('Simulation ')
 xlabel('Transmit SNR[dB]'); ylabel('Ergodic Rate [bps/Hz]');

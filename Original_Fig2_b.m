@@ -6,9 +6,9 @@ clc;
 %% 파라미터 설정
 T_SNR_dB=5; %Transmit SNR
 T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
-N_iter=1000; %반복 횟수 (Ergodic capacity 구하기 위해서) 
+N_iter=10^5; %반복 횟수 (Ergodic capacity 구하기 위해서) 
 sq2 = sqrt(0.5); %상수 지정
-nT=[1:1:64]; 
+nT=[1:3:64]; 
 nR=1; %MIMO Scale 지정
 
 %% Quantization bit 지정, b에 따른 상수 지정, b infty인 경우 근사식 이용
@@ -37,8 +37,9 @@ for Icase=1:3 %quantization bit에 따른 그래프
         end
     end
 end
-
 R = R/N_iter; %Expectation 계산
+
+
 
 plot(nT,R(1,:),'b-', nT,R(2,:),'b-', nT,R(3,:),'b-');
 hold on, grid on,

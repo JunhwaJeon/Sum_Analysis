@@ -4,7 +4,7 @@ clc;
 %% Transmit SNR - Ergodic Rate 그래프 -> Quantization bit별 커브 그리기
 
 %%파라미터 설정
-T_SNR_dB=[-15:1:20]; %SNR 범위 설정
+T_SNR_dB=-15:2:21; %SNR 범위 설정
 T_SNR_linear=10.^(T_SNR_dB/10); %linear 스케일 SNR설정
 N_iter=1000; %반복 횟수 (Ergodic capacity 구하기 위해서) 
 sq2 = sqrt(0.5); %상수 지정
@@ -24,21 +24,26 @@ for Icase=1:5
 R(Icase,:) = zeros(1,length(T_SNR_dB));%Capacity 정보 담을 행렬 지정 (안테나 경우*SNR 범위)
 R_candi=linspace(0,0,nT); %Maximum 선택 위한 후보값 담을 행렬(벡터) 지정
 
-%% Ergodic Capacity 계산
-for i=1:length(T_SNR_dB)
-    for iter=1:N_iter %반복
-        H = sq2*(randn(nR,nT)+1j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
-        for j=1:nT %Transmit Antenna Selection
-            sum_four_sqr=0;
-            norm_sqr=(H(:,j))'*H(:,j);
-            for k=1:nR
-                sum_four_sqr=sum_four_sqr+abs(H(k,j))^4;
+    for i=1:length(T_SNR_dB)
+        %% Ergodic Capacity 계산
+        for iter=1:N_iter %반복
+            H = sq2*(randn(nR,nT)+1j*randn(nR,nT)); %Complex Circular Gaussian channel (Rayleigh)
+            for j=1:nT %Transmit Antenna Selection
+                sum_four_sqr=0;
+                norm_sqr=(H(:,j))'*H(:,j);
+                for k=1:nR
+                    sum_four_sqr=sum_four_sqr+abs(H(k,j))^4;
+                end
+                R_candi(j)=log2(1+(T_SNR_linear(i)*q_gain*(norm_sqr)^2)/(norm_sqr+T_SNR_linear(i)*(beta)*sum_four_sqr));
             end
-            R_candi(j)=log2(1+(T_SNR_linear(i)*q_gain*(norm_sqr)^2)/(norm_sqr+T_SNR_linear(i)*(beta)*sum_four_sqr));
+            R(Icase,i)=R(Icase,i)+max(R_candi);
         end
-        R(Icase,i)=R(Icase,i)+max(R_candi);
+        %% Theorem 1 (Numerical capacity)
+        % Theorem 1 적분 함수 설정
+        %G=@(z) exp(-z)*(z^nR)*(gammainc(z,nR)/gamma(z))^(nT-1);
+        %G_q=@(z) (2*gamma(nR+1)/gamma())
+
     end
-end
 end
 
 R = R/N_iter; %Expectation 계산
@@ -46,4 +51,6 @@ R = R/N_iter; %Expectation 계산
 plot(T_SNR_dB,R(1,:),'b-', T_SNR_dB,R(2,:),'b-', T_SNR_dB,R(3,:),'b-');
 hold on, grid on,
 plot(T_SNR_dB,R(4,:),'b-', T_SNR_dB, R(5,:),'b-');
-xlabel('Transmit SNR[dB]'); ylabel('Ergodic Rate [bps/Hz]');
+xlabel('Transmit SNR [dB]'); ylabel('Ergodic Rate [bps/Hz]');
+xlim([-15,21]);
+legend('Simulation rate in Eq.(6)')
